@@ -99,4 +99,8 @@ public class PhotoListAdapter extends BaseAdapter {
     public void setDao(PhotoItemCollectionDao dao) {
         this.dao = dao;
     }
+
+    public void increaseLastPosition(int amount) {
+        lastPosition += amount;
+    }
 }
