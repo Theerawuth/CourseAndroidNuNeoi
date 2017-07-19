@@ -3,6 +3,9 @@ package com.example.theerawuth_p.liveat500px.manager;
 import android.content.Context;
 
 import com.example.theerawuth_p.liveat500px.dao.PhotoItemCollectionDao;
+import com.example.theerawuth_p.liveat500px.dao.PhotoItemDao;
+
+import java.util.ArrayList;
 
 /**
  * Created by theerawuth_p on 7/18/17.
@@ -24,6 +27,14 @@ public class PhotoListManager {
 
     public void setDao(PhotoItemCollectionDao dao) {
         this.dao = dao;
+    }
+
+    public void insertDaoAtTopPosition(PhotoItemCollectionDao newDao) {
+        if (dao == null)
+            dao = new PhotoItemCollectionDao();
+        if (dao.getData() == null)
+            dao.setData(new ArrayList<PhotoItemDao>());
+        dao.getData().addAll(0, newDao.getData());
     }
 
     public int getMaximunId() {
