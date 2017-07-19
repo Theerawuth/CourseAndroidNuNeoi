@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.example.theerawuth_p.liveat500px.R;
 import com.example.theerawuth_p.liveat500px.view.state.BaseCustomViewGroup;
 import com.example.theerawuth_p.liveat500px.view.state.BundleSavedState;
@@ -124,6 +123,7 @@ public class PhotoListItem extends BaseCustomViewGroup {
     public void setImageUrl(String url) {
         Glide.with(getContext())
                 .load(url)
+                .placeholder(R.drawable.loading)
                 .into(ivImg);
     }
 }
