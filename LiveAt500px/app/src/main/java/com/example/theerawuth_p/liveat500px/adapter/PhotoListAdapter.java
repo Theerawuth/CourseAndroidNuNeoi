@@ -9,7 +9,6 @@ import android.widget.BaseAdapter;
 import com.example.theerawuth_p.liveat500px.R;
 import com.example.theerawuth_p.liveat500px.dao.PhotoItemCollectionDao;
 import com.example.theerawuth_p.liveat500px.dao.PhotoItemDao;
-import com.example.theerawuth_p.liveat500px.manager.PhotoListManager;
 import com.example.theerawuth_p.liveat500px.view.PhotoListItem;
 
 /**
