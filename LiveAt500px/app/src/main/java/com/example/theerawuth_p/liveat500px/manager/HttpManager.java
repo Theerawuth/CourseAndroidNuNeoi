@@ -3,6 +3,8 @@ package com.example.theerawuth_p.liveat500px.manager;
 import android.content.Context;
 
 import com.example.theerawuth_p.liveat500px.manager.http.ApiService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -28,9 +30,13 @@ public class HttpManager {
 
         mContext = Contextor.getInstance().getContext();
 
+        Gson gson  = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                .create();
+
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://nuuneoi,com/courses/500px/")
-                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl("https://nuuneoi.com/courses/500px/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
         service = retrofit.create(ApiService.class);

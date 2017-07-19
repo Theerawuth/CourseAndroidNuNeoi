@@ -6,9 +6,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.theerawuth_p.liveat500px.R;
 import com.example.theerawuth_p.liveat500px.adapter.PhotoListAdapter;
+import com.example.theerawuth_p.liveat500px.dao.PhotoItemCollectionDao;
+import com.example.theerawuth_p.liveat500px.manager.Contextor;
+import com.example.theerawuth_p.liveat500px.manager.HttpManager;
+import com.example.theerawuth_p.liveat500px.manager.PhotoListManager;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by nuuneoi on 11/16/2014.
@@ -42,6 +51,39 @@ public class MainFragment extends Fragment {
         listView = (ListView) rootView.findViewById(R.id.listView);
         listAdapter = new PhotoListAdapter();
         listView.setAdapter(listAdapter);
+
+        Call<PhotoItemCollectionDao> call = HttpManager.getInstance().getService().loadPhotoList();
+        call.enqueue(new Callback<PhotoItemCollectionDao>() {
+            @Override
+            public void onResponse(Call<PhotoItemCollectionDao> call,
+                                   Response<PhotoItemCollectionDao> response) {
+                if(response.isSuccessful()) {
+                    PhotoItemCollectionDao dao = response.body();
+                    PhotoListManager.getInstance().setDao(dao);
+                    listAdapter.notifyDataSetChanged();
+                    Toast.makeText(Contextor.getInstance().getContext(),
+                            dao.getData().get(0).getCaption(),
+                            Toast.LENGTH_SHORT)
+                            .show();
+                } else {
+                    // Handle
+                    Toast.makeText(Contextor.getInstance().getContext(),
+                            response.errorBody().toString(),
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PhotoItemCollectionDao> call,
+                                  Throwable t) {
+                    // Handle
+                Toast.makeText(Contextor.getInstance().getContext(),
+                        t.toString(),
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
     }
 
     @Override

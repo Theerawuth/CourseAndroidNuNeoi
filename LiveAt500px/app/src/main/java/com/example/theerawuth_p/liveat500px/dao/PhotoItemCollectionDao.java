@@ -12,7 +12,7 @@ public class PhotoItemCollectionDao {
     @SerializedName("success")
     private boolean success;
     @SerializedName("data")
-    private List<PhotoitemDao> data;
+    private List<PhotoItemDao> data;
 
     public boolean isSuccess() {
         return success;
@@ -22,11 +22,11 @@ public class PhotoItemCollectionDao {
         this.success = success;
     }
 
-    public List<PhotoitemDao> getData() {
+    public List<PhotoItemDao> getData() {
         return data;
     }
 
-    public void setData(List<PhotoitemDao> data) {
+    public void setData(List<PhotoItemDao> data) {
         this.data = data;
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
  * Created by theerawuth_p on 7/18/17.
  */
 
-public class PhotoitemDao {
+public class PhotoItemDao {
 
     @SerializedName("link")
     private String link;
