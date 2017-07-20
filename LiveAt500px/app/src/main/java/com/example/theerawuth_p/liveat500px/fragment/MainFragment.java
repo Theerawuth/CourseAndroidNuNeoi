@@ -1,6 +1,7 @@
 package com.example.theerawuth_p.liveat500px.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -53,6 +54,18 @@ public class MainFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Initialize Fragement level's variables
+        photoListManager = new PhotoListManager();
+
+        if(savedInstanceState != null) {
+            // Restore Instance State
+            onRestoreInstanceState(savedInstanceState);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -61,7 +74,6 @@ public class MainFragment extends Fragment {
     }
 
     private void initInstances(View rootView) {
-        photoListManager = new PhotoListManager();
 
         btnNewPhotos = (Button) rootView.findViewById(R.id.btnNewPhotos);
         btnNewPhotos.setOnClickListener(buttonClickListener);
@@ -124,6 +136,11 @@ public class MainFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save Instance State here
+        // TODO: Save PhotoLisManager
+    }
+
+    private void onRestoreInstanceState(Bundle savedInstanceState) {
+
     }
 
     /*
