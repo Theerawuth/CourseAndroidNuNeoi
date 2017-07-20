@@ -35,6 +35,8 @@ public class MainFragment extends Fragment {
     PhotoListManager photoListManager;
     Button btnNewPhotos;
 
+    boolean isLoadingMore = false;
+
     public MainFragment() {
         super();
     }
@@ -90,6 +92,12 @@ public class MainFragment extends Fragment {
                                  int visibleItemCount,
                                  int totalItemCount) {
                 swipeRefreshLayout.setEnabled(firstVisibleItem == 0);
+                if (firstVisibleItem + visibleItemCount >= totalItemCount) {
+                    if (photoListManager.getCount() > 0) {
+                        // Load More
+                        loadMoreData();
+                    }
+                }
             }
         });
 
@@ -108,6 +116,7 @@ public class MainFragment extends Fragment {
 
         public static final int MODE_RELOAD = 1;
         public static final int MODE_RELOAD_NEWER = 2;
+        public static final int MODE_LOAD_MORE = 3;
 
         int mode;
 
@@ -118,29 +127,32 @@ public class MainFragment extends Fragment {
         @Override
         public void onResponse(Call<PhotoItemCollectionDao> call, Response<PhotoItemCollectionDao> response) {
             swipeRefreshLayout.setRefreshing(false);
-            if(response.isSuccessful()) {
+            if (response.isSuccessful()) {
                 PhotoItemCollectionDao dao = response.body();
 
                 int fristVisiblePosition = listView.getFirstVisiblePosition();
                 View c = listView.getChildAt(0);
                 int top = c == null ? 0 : c.getTop();
 
-                if(mode == MODE_RELOAD_NEWER) {
+                if (mode == MODE_RELOAD_NEWER) {
                     photoListManager.insertDaoAtTopPosition(dao);
-                } else {
+                } else if (mode == MODE_LOAD_MORE) {
+                    photoListManager.appendDaoAtBottomPosition(dao);
+                    isLoadingMore = false;
+                }else{
                     photoListManager.setDao(dao);
                 }
                 listAdapter.setDao(photoListManager.getDao());
                 listAdapter.notifyDataSetChanged();
 
-                if(mode == MODE_RELOAD_NEWER) {
+                if (mode == MODE_RELOAD_NEWER) {
 //                    Maintain Scroll Position
                     int additionalSize =
                             (dao != null && dao.getData() != null) ? dao.getData().size() : 0;
                     listAdapter.increaseLastPosition(additionalSize);
                     listView.setSelectionFromTop(fristVisiblePosition + additionalSize, top);
 
-                    if(additionalSize > 0) {
+                    if (additionalSize > 0) {
                         showButtonNewPhotos();
                     }
 
@@ -154,6 +166,9 @@ public class MainFragment extends Fragment {
                         .show();
             } else {
                 // Handle
+                if (mode == MODE_LOAD_MORE) {
+                    isLoadingMore = false;
+                }
                 Toast.makeText(Contextor.getInstance().getContext(),
                         response.errorBody().toString(),
                         Toast.LENGTH_SHORT)
@@ -163,6 +178,9 @@ public class MainFragment extends Fragment {
 
         @Override
         public void onFailure(Call<PhotoItemCollectionDao> call, Throwable t) {
+            if (mode == MODE_LOAD_MORE) {
+                isLoadingMore = false;
+            }
             swipeRefreshLayout.setRefreshing(false);
             Toast.makeText(Contextor.getInstance().getContext(),
                     t.toString(),
@@ -172,9 +190,19 @@ public class MainFragment extends Fragment {
     }
 
     private void reloadDateNewer() {
-        int maxId =  photoListManager.getMaximunId();
+        int maxId = photoListManager.getMaximunId();
         Call<PhotoItemCollectionDao> call = HttpManager.getInstance().getService().loadPhotoListAfterId(maxId);
         call.enqueue(new PhotoListLoadCallback(PhotoListLoadCallback.MODE_RELOAD_NEWER));
+    }
+
+    private void loadMoreData() {
+        if(isLoadingMore) {
+            return;
+        }
+        isLoadingMore = true;
+        int minId = photoListManager.getMinimunId();
+        Call<PhotoItemCollectionDao> call = HttpManager.getInstance().getService().loadPhotoListBeforeId(minId);
+        call.enqueue(new PhotoListLoadCallback(PhotoListLoadCallback.MODE_LOAD_MORE));
     }
 
     private void reloadData() {
@@ -214,7 +242,7 @@ public class MainFragment extends Fragment {
 
     public void showButtonNewPhotos() {
         btnNewPhotos.setVisibility(View.VISIBLE);
-        Animation anim  = AnimationUtils.loadAnimation(
+        Animation anim = AnimationUtils.loadAnimation(
                 Contextor.getInstance().getContext(),
                 R.anim.zoom_fade_in
         );
@@ -223,7 +251,7 @@ public class MainFragment extends Fragment {
 
     public void hideButtonNewPhotos() {
         btnNewPhotos.setVisibility(View.GONE);
-        Animation anim  = AnimationUtils.loadAnimation(
+        Animation anim = AnimationUtils.loadAnimation(
                 Contextor.getInstance().getContext(),
                 R.anim.zoom_fade_out
         );
