@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.theerawuth_p.liveat500px.R;
 import com.example.theerawuth_p.liveat500px.adapter.PhotoListAdapter;
 import com.example.theerawuth_p.liveat500px.dao.PhotoItemCollectionDao;
+import com.example.theerawuth_p.liveat500px.datatype.MutableInteger;
 import com.example.theerawuth_p.liveat500px.manager.Contextor;
 import com.example.theerawuth_p.liveat500px.manager.HttpManager;
 import com.example.theerawuth_p.liveat500px.manager.PhotoListManager;
@@ -33,10 +34,13 @@ public class MainFragment extends Fragment {
     //    Variable
 
     ListView listView;
-    PhotoListAdapter listAdapter;
-    SwipeRefreshLayout swipeRefreshLayout;
-    PhotoListManager photoListManager;
     Button btnNewPhotos;
+    SwipeRefreshLayout swipeRefreshLayout;
+
+    PhotoListAdapter listAdapter;
+    PhotoListManager photoListManager;
+
+    MutableInteger lastPositionInteger;
 
     boolean isLoadingMore = false;
 
@@ -60,7 +64,6 @@ public class MainFragment extends Fragment {
 
         init(savedInstanceState);
 
-
         if(savedInstanceState != null) {
             // Restore Instance State
             onRestoreInstanceState(savedInstanceState);
@@ -77,6 +80,7 @@ public class MainFragment extends Fragment {
 
     private void init(Bundle savedInstanceState) {
         photoListManager = new PhotoListManager();
+        lastPositionInteger = new MutableInteger(-1);
     }
 
     private void initInstances(View rootView, Bundle savedInstanceState) {
@@ -86,7 +90,7 @@ public class MainFragment extends Fragment {
 
         // Init 'View' instance(s) with rootView.findViewById here
         listView = (ListView) rootView.findViewById(R.id.listView);
-        listAdapter = new PhotoListAdapter();
+        listAdapter = new PhotoListAdapter(lastPositionInteger);
         listAdapter.setDao(photoListManager.getDao());
         listView.setAdapter(listAdapter);
 
@@ -148,10 +152,13 @@ public class MainFragment extends Fragment {
         // TODO: Save PhotoLisManager
         outState.putBundle("photoListManager",
                 photoListManager.onSaveInstanceState());
+        outState.putBundle("lastPositionInteger",
+                lastPositionInteger.onSaveInstanceState());
     }
 
     private void onRestoreInstanceState(Bundle savedInstanceState) {
         photoListManager.onRestoreInstanceState(savedInstanceState.getBundle("photoListManager"));
+        lastPositionInteger.onRestoreInstanceState(savedInstanceState.getBundle("lastPositionInteger"));
     }
 
     /*

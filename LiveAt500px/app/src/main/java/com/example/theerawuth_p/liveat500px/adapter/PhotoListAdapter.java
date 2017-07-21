@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 import com.example.theerawuth_p.liveat500px.R;
 import com.example.theerawuth_p.liveat500px.dao.PhotoItemCollectionDao;
 import com.example.theerawuth_p.liveat500px.dao.PhotoItemDao;
+import com.example.theerawuth_p.liveat500px.datatype.MutableInteger;
 import com.example.theerawuth_p.liveat500px.view.PhotoListItem;
 
 /**
@@ -19,8 +20,11 @@ import com.example.theerawuth_p.liveat500px.view.PhotoListItem;
 public class PhotoListAdapter extends BaseAdapter {
 
     PhotoItemCollectionDao dao;
+    MutableInteger lastPositionInteger;
 
-    int lastPosition = -1;
+    public PhotoListAdapter(MutableInteger lastPositionInteger) {
+        this.lastPositionInteger = lastPositionInteger;
+    }
 
     @Override
     public int getCount() {
@@ -103,10 +107,10 @@ public class PhotoListAdapter extends BaseAdapter {
         item.setDescriptionText(dao.getUsername() + "\n" + dao.getCamera());
         item.setImageUrl(dao.getImageUrl());
 
-        if(position > lastPosition) {
+        if(position > lastPositionInteger.getValue()) {
             Animation anim  = AnimationUtils.loadAnimation(parent.getContext(),R.anim.up_from_bottom);
             item.startAnimation(anim);
-            lastPosition = position;
+            lastPositionInteger.setValue(position);
         }
 
         return item;
@@ -122,6 +126,6 @@ public class PhotoListAdapter extends BaseAdapter {
     }
 
     public void increaseLastPosition(int amount) {
-        lastPosition += amount;
+        lastPositionInteger.setValue(lastPositionInteger.getValue() + amount);
     }
 }
