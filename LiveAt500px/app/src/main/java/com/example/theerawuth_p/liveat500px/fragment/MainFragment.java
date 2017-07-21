@@ -1,6 +1,7 @@
 package com.example.theerawuth_p.liveat500px.fragment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -88,20 +89,14 @@ public class MainFragment extends Fragment {
         photoListManager = new PhotoListManager();
         lastPositionInteger = new MutableInteger(-1);
 
-        // File Improtent in Intenal Storage
-//        File dir = getContext().getDir("Hello", Context.MODE_PRIVATE);
-        // File Catch in Intenal Storage
-        File dir = getContext().getCacheDir();
-        File file = new File(dir, "testfile.txt");
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write("hello".getBytes());
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Write file to internal storage by sharedprefs
+        SharedPreferences prefs = getContext().getSharedPreferences("dummy",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        // Add/Edit/Delete
+        editor.putString("Hello", "World");
+        editor.apply();
+
     }
 
     private void initInstances(View rootView, Bundle savedInstanceState) {
