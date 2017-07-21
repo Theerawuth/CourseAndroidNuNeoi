@@ -2,6 +2,7 @@ package com.example.theerawuth_p.liveat500px.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.theerawuth_p.liveat500px.R;
@@ -40,4 +41,5 @@ public class MoreInfoActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }
