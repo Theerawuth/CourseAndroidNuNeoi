@@ -1,10 +1,12 @@
 package com.example.theerawuth_p.liveat500px.manager;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.example.theerawuth_p.liveat500px.dao.PhotoItemCollectionDao;
 import com.example.theerawuth_p.liveat500px.dao.PhotoItemDao;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -20,6 +22,7 @@ public class PhotoListManager {
 
     public PhotoListManager() {
         mContext = Contextor.getInstance().getContext();
+        loadCache();
     }
 
     public PhotoItemCollectionDao getDao() {
@@ -28,6 +31,7 @@ public class PhotoListManager {
 
     public void setDao(PhotoItemCollectionDao dao) {
         this.dao = dao;
+        saveCache();
     }
 
     public void insertDaoAtTopPosition(PhotoItemCollectionDao newDao) {
@@ -36,6 +40,7 @@ public class PhotoListManager {
         if (dao.getData() == null)
             dao.setData(new ArrayList<PhotoItemDao>());
         dao.getData().addAll(0, newDao.getData());
+        saveCache();
     }
 
     public void appendDaoAtBottomPosition(PhotoItemCollectionDao newDao) {
@@ -44,6 +49,7 @@ public class PhotoListManager {
         if (dao.getData() == null)
             dao.setData(new ArrayList<PhotoItemDao>());
         dao.getData().addAll(dao.getData().size(), newDao.getData());
+        saveCache();
     }
 
     public int getMaximunId() {
@@ -53,11 +59,11 @@ public class PhotoListManager {
         if (dao.getData() == null) {
             return 0;
         }
-        if(dao.getData().size() == 0) {
+        if (dao.getData().size() == 0) {
             return 0;
         }
         int maxId = dao.getData().get(0).getId();
-        for (int i = 1; i < dao.getData().size(); i++){
+        for (int i = 1; i < dao.getData().size(); i++) {
             maxId = Math.max(maxId, dao.getData().get(i).getId());
         }
         return maxId;
@@ -70,11 +76,11 @@ public class PhotoListManager {
         if (dao.getData() == null) {
             return 0;
         }
-        if(dao.getData().size() == 0) {
+        if (dao.getData().size() == 0) {
             return 0;
         }
         int minId = dao.getData().get(0).getId();
-        for (int i = 1; i < dao.getData().size(); i++){
+        for (int i = 1; i < dao.getData().size(); i++) {
             minId = Math.min(minId, dao.getData().get(i).getId());
         }
         return minId;
@@ -98,6 +104,31 @@ public class PhotoListManager {
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         dao = savedInstanceState.getParcelable("dao");
+    }
+
+    private void saveCache() {
+        PhotoItemCollectionDao cacheDao = new PhotoItemCollectionDao();
+        if (dao != null && dao.getData() != null) {
+            cacheDao.setData(dao.getData().subList(0, Math.min(20, dao.getData().size())));
+        }
+        String json = new Gson().toJson(cacheDao);
+
+        SharedPreferences prefs = mContext.getSharedPreferences("photos", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("json", json);
+        editor.apply();
+    }
+
+    private void loadCache() {
+        SharedPreferences prefs = mContext.getSharedPreferences("photos", Context.MODE_PRIVATE);
+        String json = prefs.getString("json", null);
+        if (json == null) {
+            return;
+        } else {
+            dao = new Gson().fromJson(json, PhotoItemCollectionDao.class);
+        }
+
+
     }
 
 

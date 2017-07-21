@@ -89,14 +89,6 @@ public class MainFragment extends Fragment {
         photoListManager = new PhotoListManager();
         lastPositionInteger = new MutableInteger(-1);
 
-        // Write file to internal storage by sharedprefs
-        SharedPreferences prefs = getContext().getSharedPreferences("dummy",
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        // Add/Edit/Delete
-        editor.putString("Hello", "World");
-        editor.apply();
-
     }
 
     private void initInstances(View rootView, Bundle savedInstanceState) {
