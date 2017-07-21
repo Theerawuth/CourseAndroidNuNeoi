@@ -57,7 +57,9 @@ public class MainFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Initialize Fragement level's variables
-        photoListManager = new PhotoListManager();
+
+        init(savedInstanceState);
+
 
         if(savedInstanceState != null) {
             // Restore Instance State
@@ -69,11 +71,15 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        initInstances(rootView);
+        initInstances(rootView, savedInstanceState);
         return rootView;
     }
 
-    private void initInstances(View rootView) {
+    private void init(Bundle savedInstanceState) {
+        photoListManager = new PhotoListManager();
+    }
+
+    private void initInstances(View rootView, Bundle savedInstanceState) {
 
         btnNewPhotos = (Button) rootView.findViewById(R.id.btnNewPhotos);
         btnNewPhotos.setOnClickListener(buttonClickListener);
@@ -81,13 +87,16 @@ public class MainFragment extends Fragment {
         // Init 'View' instance(s) with rootView.findViewById here
         listView = (ListView) rootView.findViewById(R.id.listView);
         listAdapter = new PhotoListAdapter();
+        listAdapter.setDao(photoListManager.getDao());
         listView.setAdapter(listAdapter);
 
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(pullToRefreshListener);
         listView.setOnScrollListener(listViewScrollListener);
 
-        refreshData();
+        if(savedInstanceState == null) {
+            refreshData();
+        }
     }
 
     private void refreshData() {
@@ -137,10 +146,12 @@ public class MainFragment extends Fragment {
         super.onSaveInstanceState(outState);
         // Save Instance State here
         // TODO: Save PhotoLisManager
+        outState.putBundle("photoListManager",
+                photoListManager.onSaveInstanceState());
     }
 
     private void onRestoreInstanceState(Bundle savedInstanceState) {
-
+        photoListManager.onRestoreInstanceState(savedInstanceState.getBundle("photoListManager"));
     }
 
     /*
