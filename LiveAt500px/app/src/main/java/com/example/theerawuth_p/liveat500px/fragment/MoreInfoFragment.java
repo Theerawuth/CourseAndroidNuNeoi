@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.theerawuth_p.liveat500px.R;
+import com.example.theerawuth_p.liveat500px.dao.PhotoItemDao;
 import com.inthecheesefactory.thecheeselibrary.view.SlidingTabLayout;
 
 
@@ -25,13 +26,16 @@ public class MoreInfoFragment extends Fragment {
     ViewPager viewPager;
     SlidingTabLayout slidingTabLayout;
 
+    PhotoItemDao dao;
+
     public MoreInfoFragment() {
         super();
     }
 
-    public static MoreInfoFragment newInstance() {
+    public static MoreInfoFragment newInstance(PhotoItemDao dao) {
         MoreInfoFragment fragment = new MoreInfoFragment();
         Bundle args = new Bundle();
+        args.putParcelable("dao", dao);
         fragment.setArguments(args);
         return fragment;
     }
@@ -40,6 +44,8 @@ public class MoreInfoFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init(savedInstanceState);
+
+        dao = getArguments().getParcelable("dao");
 
         if (savedInstanceState != null)
             onRestoreInstanceState(savedInstanceState);
@@ -69,11 +75,11 @@ public class MoreInfoFragment extends Fragment {
             public Fragment getItem(int position) {
                 switch (position) {
                     case 0:
-                        return PhotoSummaryFragment.newInstance();
+                        return PhotoSummaryFragment.newInstance(dao);
                     case 1:
-                        return PhotoInfoFragment.newInstance();
+                        return PhotoInfoFragment.newInstance(dao);
                     case 2:
-                        return PhotoTagsFragment.newInstance();
+                        return PhotoTagsFragment.newInstance(dao);
                     default:
                         return null;
                 }
