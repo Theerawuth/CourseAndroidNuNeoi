@@ -1,5 +1,6 @@
 package com.example.theerawuth_p.liveat500px.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,11 @@ import com.example.theerawuth_p.liveat500px.datatype.MutableInteger;
 import com.example.theerawuth_p.liveat500px.manager.Contextor;
 import com.example.theerawuth_p.liveat500px.manager.HttpManager;
 import com.example.theerawuth_p.liveat500px.manager.PhotoListManager;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -81,6 +87,21 @@ public class MainFragment extends Fragment {
     private void init(Bundle savedInstanceState) {
         photoListManager = new PhotoListManager();
         lastPositionInteger = new MutableInteger(-1);
+
+        // File Improtent in Intenal Storage
+//        File dir = getContext().getDir("Hello", Context.MODE_PRIVATE);
+        // File Catch in Intenal Storage
+        File dir = getContext().getCacheDir();
+        File file = new File(dir, "testfile.txt");
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write("hello".getBytes());
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initInstances(View rootView, Bundle savedInstanceState) {
